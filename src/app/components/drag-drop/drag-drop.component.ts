@@ -117,16 +117,23 @@ export class DragDropComponent implements OnInit {
   }
 
   changePosition() {
-    console.log('changePosition');
+
     const sourceEl: ElementRef = this.dragItems.find(i => i.appDragData.toString() === this.dragSource.toString()).el;
     const sourcePosition = [(sourceEl.nativeElement as HTMLElement).offsetLeft, (sourceEl.nativeElement as HTMLElement).offsetTop];
+    
     const targetEl: ElementRef = this.dragItems.find(i => i.appDragData.toString() === this.dragTarget.toString()).el;
+
     const targetPosition = [(targetEl.nativeElement as HTMLElement).offsetLeft, (targetEl.nativeElement as HTMLElement).offsetTop];
+  
     let toSourceValue = `translate(${ Math.round(sourcePosition[0] - targetPosition[0]) }px, ${ Math.round(sourcePosition[1] - targetPosition[1]) }px)`;
     let toTargetValue = `translate(${ Math.round(targetPosition[0] - sourcePosition[0]) }px, ${ Math.round(targetPosition[1] - sourcePosition[1]) }px)`;
+
+    console.log('change position', (targetEl.nativeElement as HTMLElement).style.webkitTransform)
+
     this.render2.setStyle(sourceEl.nativeElement,'transform', toTargetValue);
     this.render2.setStyle(sourceEl.nativeElement,'z-index', 999);
     this.render2.setStyle(targetEl.nativeElement,'transform', toSourceValue);
+    
   }
 
   resetPosition() {
