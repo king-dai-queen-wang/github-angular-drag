@@ -1,0 +1,10 @@
+<p>
+  life-cycle works!
+</p>
+<input type="text" [(ngModel)]="msg">
+<input type="text" [(ngModel)]="user.name">
+<button (click)="flag=!flag"></button>
+<app-life-cycle-child #child1 [name]="msg" [user]="user">
+	<p class="a">a</p>
+	<p class="b">b</p>
+</app-life-cycle-child>

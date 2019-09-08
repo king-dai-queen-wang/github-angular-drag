@@ -1,0 +1,17 @@
+<div class="container">
+  <div *ngFor="let item of (option$ | async); index as i"
+       class="item"
+       draggable="true" appDrag appDrop
+       [appDragData]="i"
+       (hwDragStart)="onDragStart($event)"
+       (hwDrag)="onDrag($event)"
+       (hwMouseUp)="onMouseUp($event)"
+       (hwDragEnd)="onDragEnd($event)"
+       (hwDragEnter)="onDragEnter($event, i)"
+       (hwDragOver)="onDragOver($event)"
+       (hwDragLeave)="onDragLeave($event, i)"
+       (hwDrop)="onDrop($event, i)"
+  >
+    {{item}}-{{i}}
+  </div>
+</div>

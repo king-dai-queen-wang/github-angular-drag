@@ -1,0 +1,27 @@
+<div *ngIf="selectedHero">
+	<h2>{{selectedHero.name | uppercase}} Details</h2>
+	<span>id: </span>{{selectedHero.id}}
+	<span>name: </span>{{selectedHero.name}}
+	<label><input type="text" placeholder="name" [(ngModel)] = 'selectedHero.name' /></label>
+</div>
+<button (click)='getHeroes()'>Fatch All</button>
+<h2>My Heroes</h2>
+<ul class = 'heros'>
+    <li *ngFor = "let hero of heros" (click)="onSelect(hero)" [class.selected]="hero === selectedHero">
+    	<a routerLink = '/detail/{{hero.id}}'>
+    		<span class="badge">{{hero.id}}</span>{{hero.name}}
+    	</a>
+    	<button class="delete" title="delete hero"
+  			(click)="delete(hero)">x</button>
+    </li>
+ </ul>
+<div>
+  <label>Hero name:
+    <input #heroName />
+  </label>
+  <!-- (click) passes input value to add() and then clears the input -->
+  <button (click)="add(heroName.value); heroName.value=''">
+    add
+  </button>
+</div>
+ <app-hero-detail [hero]="selectedHero"></app-hero-detail>
