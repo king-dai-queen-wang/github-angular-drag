@@ -159,8 +159,4 @@ export class DragDropComponent implements OnInit {
     
   // }
 
-  onMouseUp(event) {
-    console.log(event);
-  }
-
 }
