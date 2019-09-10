@@ -33,29 +33,33 @@ export class DragDropComponent implements OnInit {
     return this.dragSource.toString() === target.toString();
   }
 
-  isLastItem(target: any) {
-    return !isNullOrUndefined(this.lastTransformedBlock)? this.lastTransformedBlock.toString() === target.toString() : false;
-  }
-
-  addDragClass(event: Event) {
+  addDraggingClass(event: Event) {
     (event.currentTarget as HTMLElement).classList.add('dragging');
   }
 
-  removeDragClass(event: Event){
+  removeDraggingClass(event: Event){
     (event.currentTarget as HTMLElement).classList.remove('dragging');
+  }
+
+  addDragedClass(event: Event) {
+    (event.currentTarget as HTMLElement).classList.add('draged');
+  }
+
+  removeDragedClass(event: Event){
+    (event.currentTarget as HTMLElement).classList.remove('draged');
   }
 
   onDragStart(event: any) {
     this.isDragging = true;
     this.dragSource = event.dataTransfer.getData('text/plain');
-    this.addDragClass(event);
+    this.addDraggingClass(event);
   }
 
   onDrag(event: Event) {
   }
 
   onDragEnd(event: Event) {
-    this.removeDragClass(event);
+    this.removeDraggingClass(event);
     this.isDragging = false;
     console.log('dragEnd', event.target);
     this.resetPosition();
@@ -63,7 +67,6 @@ export class DragDropComponent implements OnInit {
 
   onDragEnter(event: Event, target: any) {
     this.isDragging = true;
-    this.addDragClass(event);
     // this.resetPosition();
     if (this.isMyself(target)) {
       return
@@ -87,7 +90,6 @@ export class DragDropComponent implements OnInit {
   }
 
   onDragLeave(event: any, target: any) {
-    this.removeDragClass(event);
     // this.lastTransformedBlock = target;
     if (this.isMyself(target)) {
       return
@@ -97,7 +99,6 @@ export class DragDropComponent implements OnInit {
   }
 
   onDrop(event: any, target) {
-    this.removeDragClass(event);
     const fromData = event.dataTransfer.getData('text/plain');
     this.ajax(fromData, this.dragTarget);
     this.resetPosition();
@@ -119,20 +120,22 @@ export class DragDropComponent implements OnInit {
   changePosition() {
 
     const sourceEl: ElementRef = this.dragItems.find(i => i.appDragData.toString() === this.dragSource.toString()).el;
-    const sourcePosition = [(sourceEl.nativeElement as HTMLElement).offsetLeft, (sourceEl.nativeElement as HTMLElement).offsetTop];
-    
+    const sourceElement = (sourceEl.nativeElement as HTMLElement);
+    const sourcePosition = [sourceElement.offsetLeft, sourceElement.offsetTop];
+    console.log(sourceElement.style.transform)
     const targetEl: ElementRef = this.dragItems.find(i => i.appDragData.toString() === this.dragTarget.toString()).el;
-
-    const targetPosition = [(targetEl.nativeElement as HTMLElement).offsetLeft, (targetEl.nativeElement as HTMLElement).offsetTop];
+    const targetElement = (targetEl.nativeElement as HTMLElement);
+    const targetPosition = [targetElement.offsetLeft, targetElement.offsetTop];
   
     let toSourceValue = `translate(${ Math.round(sourcePosition[0] - targetPosition[0]) }px, ${ Math.round(sourcePosition[1] - targetPosition[1]) }px)`;
     let toTargetValue = `translate(${ Math.round(targetPosition[0] - sourcePosition[0]) }px, ${ Math.round(targetPosition[1] - sourcePosition[1]) }px)`;
 
-    console.log('change position', (targetEl.nativeElement as HTMLElement).style.webkitTransform)
-
+    console.log('change position', sourcePosition,targetPosition 
+    )
+    this.render2.addClass(targetEl.nativeElement,'draged');
     this.render2.setStyle(sourceEl.nativeElement,'transform', toTargetValue);
-    this.render2.setStyle(sourceEl.nativeElement,'z-index', 999);
     this.render2.setStyle(targetEl.nativeElement,'transform', toSourceValue);
+    this.render2.reClass(targetEl.nativeElement,'draged');
     
   }
 
