@@ -49,6 +49,10 @@ export class DragDropComponent implements OnInit {
     (event.currentTarget as HTMLElement).classList.remove('draged');
   }
 
+  hasDragedClass(event: Event){
+    return (event.currentTarget as HTMLElement).classList.contains('draged');
+  }
+
   onDragStart(event: any) {
     this.isDragging = true;
     this.dragSource = event.dataTransfer.getData('text/plain');
@@ -68,7 +72,7 @@ export class DragDropComponent implements OnInit {
   onDragEnter(event: Event, target: any) {
     this.isDragging = true;
     // this.resetPosition();
-    if (this.isMyself(target)) {
+    if (this.isMyself(target) || this.hasDragedClass(event)) {
       return
     }
     
@@ -132,10 +136,10 @@ export class DragDropComponent implements OnInit {
 
     console.log('change position', sourcePosition,targetPosition 
     )
-    this.render2.addClass(targetEl.nativeElement,'draged');
+    this.render2.listen(targetEl.nativeElement,'transitionstart', this.addDragedClass);
     this.render2.setStyle(sourceEl.nativeElement,'transform', toTargetValue);
     this.render2.setStyle(targetEl.nativeElement,'transform', toSourceValue);
-    this.render2.reClass(targetEl.nativeElement,'draged');
+    this.render2.listen(targetEl.nativeElement,'transitionend', this.removeDragedClass);
     
   }
 
