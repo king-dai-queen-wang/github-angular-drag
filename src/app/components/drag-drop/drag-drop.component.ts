@@ -24,6 +24,7 @@ export class DragDropComponent implements OnInit {
   private dragTarget: any;
   private isDragging = false;
   lastTransformedBlock = null;
+  private targetResult: any = null;
   constructor(private render2:Renderer2, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
@@ -53,6 +54,11 @@ export class DragDropComponent implements OnInit {
     return (event.currentTarget as HTMLElement).classList.contains('draged');
   }
 
+  isLastTransformedData(target: any) {
+    if(isNullOrUndefined(target) || isNullOrUndefined(this.lastTransformedBlock)) return false;
+    return this.lastTransformedBlock.toString() === target.toString();
+  }
+
   onDragStart(event: any) {
     this.isDragging = true;
     this.dragSource = event.dataTransfer.getData('text/plain');
@@ -75,18 +81,21 @@ export class DragDropComponent implements OnInit {
     if (this.isMyself(target) || this.hasDragedClass(event)) {
       return
     }
-    
-    if(!isNullOrUndefined(this.lastTransformedBlock)) this.resetDragTargetPosition(this.lastTransformedBlock);
 
+    if(this.isLastTransformedData(target)) {
+      this.resetPosition()
+      return;
+    }
+  console.log('this.lastTransformedBlock',this.lastTransformedBlock)
+    if(!isNullOrUndefined(this.lastTransformedBlock)) {
+      
+this.resetDragTargetPosition
+(this.lastTransformedBlock);
+
+    }
     this.lastTransformedBlock = target;
-    
-    
     console.log('onDragEnter', target, this.lastTransformedBlock);
     // reset last
-    
-
-    this.dragTarget = target;
-
     this.changePosition();
   }
 
@@ -102,13 +111,15 @@ export class DragDropComponent implements OnInit {
 
   }
 
-  onDrop(event: any, target) {
+  onDrop(event: any) {
     const fromData = event.dataTransfer.getData('text/plain');
-    this.ajax(fromData, this.dragTarget);
+    console.log('drop', fromData, this.lastTransformedBlock, this.dragTarget, this.targetResult)
+    this.ajax(fromData,  this.targetResult);
     this.resetPosition();
   }
 
   ajax(fromData: any, targetData: any): void {
+    console.log(fromData, targetData)
     if (isNullOrUndefined(targetData) ||  fromData.toString() === targetData.toString()) {
       return;
     }
@@ -119,6 +130,7 @@ export class DragDropComponent implements OnInit {
     this.cdr.markForCheck();
     this.dragTarget = null;
     this.dragSource = null;
+    this.targetResult = null;
   }
 
   changePosition() {
@@ -127,7 +139,7 @@ export class DragDropComponent implements OnInit {
     const sourceElement = (sourceEl.nativeElement as HTMLElement);
     const sourcePosition = [sourceElement.offsetLeft, sourceElement.offsetTop];
     console.log(sourceElement.style.transform)
-    const targetEl: ElementRef = this.dragItems.find(i => i.appDragData.toString() === this.dragTarget.toString()).el;
+    const targetEl: ElementRef = this.dragItems.find(i => i.appDragData.toString() === this.lastTransformedBlock.toString()).el;
     const targetElement = (targetEl.nativeElement as HTMLElement);
     const targetPosition = [targetElement.offsetLeft, targetElement.offsetTop];
   
@@ -140,6 +152,8 @@ export class DragDropComponent implements OnInit {
     this.render2.setStyle(sourceEl.nativeElement,'transform', toTargetValue);
     this.render2.setStyle(targetEl.nativeElement,'transform', toSourceValue);
     this.render2.listen(targetEl.nativeElement,'transitionend', this.removeDragedClass);
+
+    this.targetResult = this.lastTransformedBlock;
     
   }
 
@@ -148,17 +162,21 @@ export class DragDropComponent implements OnInit {
     const sourceEl: ElementRef = this.dragItems.forEach(item => {
       this.render2.setStyle(item.el.nativeElement,'transform', `translate(0)`);
     });
+    this.lastTransformedBlock = null;
+    this.dragTarget = null;
+    this.targetResult = null;
 
   }
 
   resetDragTargetPosition(target) {
     const targetEl: ElementRef = this.dragItems.find(i => i.appDragData.toString() === target.toString()).el;
-    const targetPosition = [0, 0];
 
     let toTargetValue = `translate(0)`;
-
+this.render2.listen(targetEl.nativeElement,'transitionstart', this.addDragedClass);
     this.render2.setStyle(targetEl.nativeElement,'transform', toTargetValue);
     this.render2.removeClass(targetEl.nativeElement,'dragging');
+    
+    this.render2.listen(targetEl.nativeElement,'transitionend', this.removeDragedClass);
   }
 
   // @HostListener('mouseup', ['$event'])
