@@ -54,6 +54,10 @@ export class DragDropComponent implements OnInit {
     return (event.currentTarget as HTMLElement).classList.contains('draged');
   }
 
+  isNotAllowAreaDroped(event: DragEvent) {
+    return event.dataTransfer.dropEffect === 'none';
+  }
+
   isLastTransformedData(target: any) {
     if(isNullOrUndefined(target) || isNullOrUndefined(this.lastTransformedBlock)) return false;
     return this.lastTransformedBlock.toString() === target.toString();
@@ -68,11 +72,14 @@ export class DragDropComponent implements OnInit {
   onDrag(event: Event) {
   }
 
-  onDragEnd(event: Event) {
+  onDragEnd(event: DrEvent) {
     this.removeDraggingClass(event);
     this.isDragging = false;
-    console.log('dragEnd', event.target);
-    this.resetPosition();
+    console.log('dragEnd', event);
+    if (this.isNotAllowAreaDroped(event) || this.hasDragedClass(event)) {
+      this.resetPosition();
+    }
+    // this.resetPosition();
   }
 
   onDragEnter(event: Event, target: any) {
